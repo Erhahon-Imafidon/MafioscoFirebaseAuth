@@ -6,12 +6,24 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import { Button } from '@rneui/themed';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
+import { handleSignUp, handleLogin } from '../helpers/utils';
+
 const LoginScreen = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <SafeAreaProvider>
       <KeyboardAvoidingView
@@ -22,8 +34,8 @@ const LoginScreen = () => {
           <TextInput
             placeholder="Email"
             placeholderTextColor="lightgrey"
-            value=""
-            onChangeText={() => {}}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
             style={styles.input}
           />
 
@@ -31,35 +43,62 @@ const LoginScreen = () => {
             <TextInput
               placeholder="Password"
               placeholderTextColor="lightgrey"
-              value=""
-              onChangeText={() => {}}
-              secureTextEntry={true}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+              secureTextEntry={!showPassword}
               style={styles.input}
             />
 
-            <TouchableOpacity style={styles.showPassword}>
-              <Ionicons name="eye" size={24} color="#297ed7" />
+            <TouchableOpacity
+              style={styles.showPassword}
+              onPress={handleShowPassword}
+            >
+              <Ionicons
+                name={showPassword ? 'eye-off' : 'eye'}
+                size={24}
+                color="#297ed7"
+              />
             </TouchableOpacity>
           </View>
 
           {/* Button Container  */}
-          <View style={styles.buttonContainer}>
-            <Button
-              title={'Login'}
-              titleStyle={styles.buttonText}
-              buttonStyle={styles.button}
-              containerStyle={styles.buttonOuterStyle}
-              onPress={() => {}}
-            />
+          {isLoading ? (
+            <ActivityIndicator size="large" color="#297ed7" />
+          ) : (
+            <View style={styles.buttonContainer}>
+              <Button
+                title={'Login'}
+                titleStyle={styles.buttonText}
+                buttonStyle={styles.button}
+                containerStyle={styles.buttonOuterStyle}
+                onPress={() =>
+                  handleLogin(
+                    email,
+                    password,
+                    setIsLoading,
+                    setEmail,
+                    setPassword
+                  )
+                }
+              />
 
-            <Button
-              title={'SignUp'}
-              titleStyle={[styles.buttonText, styles.buttonTextOutline]}
-              buttonStyle={[styles.button, styles.buttonOutline]}
-              containerStyle={styles.buttonOuterStyle}
-              onPress={() => {}}
-            />
-          </View>
+              <Button
+                title={'SignUp'}
+                titleStyle={[styles.buttonText, styles.buttonTextOutline]}
+                buttonStyle={[styles.button, styles.buttonOutline]}
+                containerStyle={styles.buttonOuterStyle}
+                onPress={() =>
+                  handleSignUp(
+                    email,
+                    password,
+                    setIsLoading,
+                    setPassword,
+                    setEmail
+                  )
+                }
+              />
+            </View>
+          )}
         </View>
       </KeyboardAvoidingView>
     </SafeAreaProvider>
